@@ -3,6 +3,9 @@ import csv
 # UHCOSC1437BiedigerSpring2023_assignment_report_MW_2023-05-05_0013.csv
 # UHCOSC1437BiedigerSpring2023_assignment_report_TR_2023-05-05_0048.csv
 
+# Grading for Dan\UHCOSC1437BiedigerSpring2023_assignment_report_MW_2023-05-05_0013.csv
+# Grading for Dan\UHCOSC1437BiedigerSpring2023_assignment_report_TR_2023-05-05_0048.csv
+
 # ask for which csv file to open
 filename = str(input("Enter the exact csv file name to open: "))
 print()
@@ -11,27 +14,15 @@ with open(filename, 'r') as file:
     csvreader = csv.reader(file)
     heading = next(csvreader) # get the header of the csv file
 
-    # initialize all lists based on assignments/labs/readings/exams with the amount of pts associated with them
-    readings = []
-    readingpts = []
+    # initialize all dictionaries based on assignments/labs/readings/exams with the amount of pts associated with them
 
-    labs = []
-    labpts = []
-
-    exams = []
-    exampts = []
-
-    midterm = []
-    midtermpts = []
-
-    final = []
-    finalpts = []
-
-    project = []
-    projectpts = []
-
-    eclab = []
-    eclabpts = []
+    readings = {}
+    labs = {}
+    exams = {}
+    midterm = {}
+    final = {}
+    project = {}
+    extraCredit = {}
 
     # initialize the number of points to -1 and the position of every item to 0
     pts = -1.0
@@ -49,28 +40,22 @@ with open(filename, 'r') as file:
 
         # find key terms in the file and associate the position and points based on the key term
         if "Project" in item:
-            project.append(pos)
-            projectpts.append(pts)
+            project[pos] = pts
 
         elif "Additional" in item:
-            eclab.append(pos)
-            eclabpts.append(pts)
+            extraCredit[pos] = pts
 
         elif "Lab" in item:
-            labs.append(pos)
-            labpts.append(pts)
+            labs[pos] = pts
 
         elif "Exam" in item:
-            exams.append(pos)
-            exampts.append(pts)
+            exams[pos] = pts
 
         elif "Midterm" in item:
-            midterm.append(pos)
-            midtermpts.append(pts)
+            midterm[pos] = pts
 
         elif "Topic" in item:
-            readings.append(pos)
-            readingpts.append(pts)
+            readings[pos] = pts
 
         pos += 1
 
@@ -80,16 +65,17 @@ with open(filename, 'r') as file:
 
         # calculate reading average
         avgReads = 0.0
-        for i in range(len(readings)):
-            avgReads += (float(row[readings[i]])*readingpts[i])
+        for index in readings:
+            avgReads += (float(row[index])*readings[index])
         
         # calculate lab average
         avgLabs = 0.0
-        for i in range(len(labs)):
-            avgLabs += (float(row[labs[i]])*labpts[i])    
+        for index in labs:
+            avgLabs += (float(row[index])*labs[index])  
         
         # calculate project 1 grade
-        project1 = (float(row[project[0]])/projectpts[0])*100
+        for index in project:
+            project1 = (float(row[index])/33.33)*100
 
         # calculate exam average 
 

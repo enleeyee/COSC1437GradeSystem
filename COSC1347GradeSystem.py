@@ -42,9 +42,6 @@ with open(filename, 'r') as file:
         if "Project" in item:
             project[pos] = pts
 
-        elif "Additional" in item:
-            extraCredit[pos] = pts
-
         elif "Lab" in item:
             labs[pos] = pts
 
@@ -61,8 +58,9 @@ with open(filename, 'r') as file:
 
     # find the avg of all grades
     # iterate through the rest of the file
+    count = 0
     for row in csvreader:
-
+        count += 1
         # calculate reading average
         avgReads = 0.0
         for index in readings:
@@ -78,9 +76,33 @@ with open(filename, 'r') as file:
             project1 = (float(row[index])/33.33)*100
 
         # calculate exam average 
+        avgExams = {}
+        num = 1
+        for index in exams:
+            if row[index] != 'N/A':
+                avgExams[num] = (float(row[index])*exams[index])
+                #print(num, index, exams[index])
+                num += 1
+
 
         #calculate midterm grade
 
         #calculate final grade
 
-        print(f"{row[0]}, {row[1]} - Readings: {avgReads:.2f}, Labs: {avgLabs:.2f}, Project 1: {project1:.2f}")
+        if avgLabs > 2400:
+            avgLabs = 2400
+
+        print(f"{row[0]}, {row[1]}, {row[4]} - Readings: {avgReads:.2f}, Labs: {avgLabs:.2f}, Project 1: {project1:.2f}")
+        for key in avgExams:
+            print(f"Exam {key}: {avgExams[key]:.2f}")
+        print(input("Press Enter to continue."))
+
+total = 0
+for key in labs:
+    total += (labs[key] * 100)
+print(f"Total labs points is {total}")
+
+total = 0
+for key in readings:
+    total += (readings[key] * 100)
+print(f"Total readings points is {total}")

@@ -1,14 +1,24 @@
 import csv
 
-# UHCOSC1437BiedigerSpring2023_assignment_report_MW_2023-05-05_0013.csv
-# UHCOSC1437BiedigerSpring2023_assignment_report_TR_2023-05-05_0048.csv
+def totalPoints(dictionaryPTS):
+    total = 0
+    for key in dictionaryPTS:
+        total += (dictionaryPTS[key] * 100)
+    return total
 
-# Grading for Dan\UHCOSC1437BiedigerSpring2023_assignment_report_MW_2023-05-05_0013.csv
-# Grading for Dan\UHCOSC1437BiedigerSpring2023_assignment_report_TR_2023-05-05_0048.csv
+def calculateGrade(dictionaryPTS, average, row):
+    average = 0
+    for index in dictionaryPTS:
+            average += (float(row[index])*dictionaryPTS[index])
+    return average
 
 # ask for which csv file to open
 filename = str(input("Enter the exact csv file name to open: "))
 print()
+
+individualCheck = str(input("Do you wan to find a certain student (Yes or No): "))
+if individualCheck == 'Yes':
+    whichStudent = str(input("Which student are you looking for (last name, first name): "))
 
 with open(filename, 'r') as file:
     csvreader = csv.reader(file)
@@ -42,6 +52,9 @@ with open(filename, 'r') as file:
         if "Project" in item:
             project[pos] = pts
 
+        elif "Additional" in item:
+            extraCredit[pos] = pts
+
         elif "Lab" in item:
             labs[pos] = pts
 
@@ -55,6 +68,11 @@ with open(filename, 'r') as file:
             readings[pos] = pts
 
         pos += 1
+    
+    # find the total number of points for each section
+    totalLabs = totalPoints(labs)
+    totalReading = totalPoints(readings)
+    totalExam = totalPoints(exams)
 
     # find the avg of all grades
     # iterate through the rest of the file
@@ -62,14 +80,13 @@ with open(filename, 'r') as file:
     for row in csvreader:
         count += 1
         # calculate reading average
-        avgReads = 0.0
-        for index in readings:
-            avgReads += (float(row[index])*readings[index])
+        avgReads = 0
+        avgReads = calculateGrade(readings, avgReads, row)
         
         # calculate lab average
-        avgLabs = 0.0
-        for index in labs:
-            avgLabs += (float(row[index])*labs[index])  
+        avgLabs = 0
+        avgLabs = calculateGrade(labs, avgLabs, row) 
+        avgLabs += calculateGrade(extraCredit, avgLabs, row) 
         
         # calculate project 1 grade
         for index in project:
@@ -81,28 +98,40 @@ with open(filename, 'r') as file:
         for index in exams:
             if row[index] != 'N/A':
                 avgExams[num] = (float(row[index])*exams[index])
-                #print(num, index, exams[index])
                 num += 1
 
-
         #calculate midterm grade
-
-        #calculate final grade
+        midtermGrade = 0
+        midtermGrade = calculateGrade(midterm, midtermGrade, row)
 
         if avgLabs > 2400:
             avgLabs = 2400
 
-        print(f"{row[0]}, {row[1]}, {row[4]} - Readings: {avgReads:.2f}, Labs: {avgLabs:.2f}, Project 1: {project1:.2f}")
-        for key in avgExams:
-            print(f"Exam {key}: {avgExams[key]:.2f}")
-        print(input("Press Enter to continue."))
+        if individualCheck == 'No':
+            print(f"{row[0]}, {row[1]}, {row[4]} - Readings: {avgReads:.2f}, Labs: {avgLabs:.2f}, Project 1: {project1:.2f}")
+            examGrade = 0
+            for key in avgExams:
+                print(f"Exam {key}: {avgExams[key]:.2f}")
+                examGrade += avgExams[key]
+            
+            #calculate final grade letter
+            finalGrade = (avgLabs/totalLabs)*15 + ((midtermGrade+examGrade+400)/totalExam)*40 + (avgReads/totalReading)*10 + (project1/200)*20
+            finalGrade += (("""Manually input quiz :(""") / 6) * 15
+            print(f"Final grade: {finalGrade}%")
+            print(input("Press Enter to continue."))
 
-total = 0
-for key in labs:
-    total += (labs[key] * 100)
-print(f"Total labs points is {total}")
+        else:
+            if whichStudent == f"{row[0]}, {row[1]}":
+                print(f"{row[0]}, {row[1]}, {row[4]} - Readings: {avgReads:.2f}, Labs: {avgLabs:.2f}, Project 1: {project1:.2f}")
+                examGrade = 0
+                for key in avgExams:
+                    print(f"Exam {key}: {avgExams[key]:.2f}")
+                    examGrade += avgExams[key]
 
-total = 0
-for key in readings:
-    total += (readings[key] * 100)
-print(f"Total readings points is {total}")
+                #calculate final grade letter
+                finalGrade = (avgLabs/totalLabs)*15 + ((midtermGrade+examGrade+400)/totalExam)*40 + (avgReads/totalReading)*10 + (project1/200)*20
+                finalGrade += (("""Manually input quiz :(""") / 6) * 15
+                print(f"Final grade: {finalGrade}%")
+
+                print(input("Press Enter to continue."))
+
